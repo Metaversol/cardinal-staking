@@ -37,7 +37,7 @@ const checkStakeEntry = async (
 };
 
 checkStakeEntry(
-  "mainnet",
-  new PublicKey("3BZCupFU6X3wYJwgTsKS2vTs4VeMrhSZgx4P2TfzExtP"),
-  new PublicKey("2eRCM7sSKuYKiSpEssZTxzKTfPiMbs4JFBwbeeDS3w71")
+  "mainnet-beta",
+  new PublicKey("79ZGVZuP93wChsjiqvpCUZtTq6xYc8Edaid4ng8BHxp1"),
+  new PublicKey("6zoA37hfYtb9W9c33b5Qexz75gLVF66GxT34qqJuJt1G")
 ).catch((e) => console.log(e));
