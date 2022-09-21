@@ -24,9 +24,10 @@ import {
 } from "../src/programs/stakePool/accounts";
 import { findStakeEntryId } from "../src/programs/stakePool/pda";
 import { fetchMetadata } from "./getMetadataForPoolTokens";
+import { bronze } from "./passes/bronze_stringified";
 
 const wallet = new SignerWallet(
-  Keypair.fromSecretKey(utils.bytes.bs58.decode("SECRET_KEY"))
+  Keypair.fromSecretKey(utils.bytes.bs58.decode(process.env.SECRET_KEY || ""))
 );
 
 const POOL_ID = new PublicKey("POOL_ID");
@@ -43,21 +44,32 @@ export type UpdateRule = {
   };
 };
 
+interface UpdateRuleVolumeWithApplicableMints extends UpdateRule {
+  volume?: {
+    volumeUpperBound: number;
+    multiplier: number;
+    applicableMints: string[];
+  }[];
+}
+
+const SELECTED_MINTS = ["hi"]; // bronze;
+const SELECTED_MINTS2 = bronze;
+
 const UPDATE_RULES: UpdateRule[] = [
   // {
-  //   volume: [
-  //     { volumeUpperBound: 1, multiplier: 1 },
-  //     { volumeUpperBound: 4, multiplier: 3 },
-  //     { volumeUpperBound: 7, multiplier: 6 },
-  //     { volumeUpperBound: 9, multiplier: 7 },
-  //     { volumeUpperBound: 15, multiplier: 10 },
-  //     { volumeUpperBound: 29, multiplier: 20 },
-  //     { volumeUpperBound: 39, multiplier: 25 },
-  //     { volumeUpperBound: 40, multiplier: 30 },
+  //   volume: [{ volumeUpperBound: 1, multiplier: 2 }],
+  // },
+  // { volumeUpperBound: 4, multiplier: 3 },
+  // { volumeUpperBound: 7, multiplier: 6 },
+  // { volumeUpperBound: 9, multiplier: 7 },
+  // { volumeUpperBound: 15, multiplier: 10 },
+  // { volumeUpperBound: 29, multiplier: 20 },
+  // { volumeUpperBound: 39, multiplier: 25 },
+  // { volumeUpperBound: 40, multiplier: 30 },
   //   ],
   // },
   // {
-  // metadata: [{ traitType: "some_trait", value: "value", multiplier: 2 }],
+  // metadata: [{ traitType: "Pass Type", value: "Bronze", multiplier: 2 }],
   // },
 ];
 
@@ -68,10 +80,18 @@ const updateMultipliersOnRules = async (
   const connection = connectionFor(cluster);
 
   // get all active stake entries
-  const activeStakeEntries = await getActiveStakeEntriesForPool(
+  const activeStakeEntriesAll = await getActiveStakeEntriesForPool(
     connection,
     stakePoolId
   );
+  console.dir(activeStakeEntriesAll);
+  console.log("active entries: ", activeStakeEntriesAll.length);
+
+  const activeStakeEntries = activeStakeEntriesAll.filter((entry) =>
+    SELECTED_MINTS.includes(entry.parsed.originalMint.toBase58())
+  );
+  console.dir(activeStakeEntries);
+  console.log("active activeStakeEntries: ", activeStakeEntries.length);
 
   for (const rule of UPDATE_RULES) {
     let dataToSubmit: { mint: PublicKey; multiplier: number }[] = [];
