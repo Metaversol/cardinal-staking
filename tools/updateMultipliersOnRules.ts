@@ -26,7 +26,7 @@ import { findStakeEntryId } from "../src/programs/stakePool/pda";
 import { fetchMetadata } from "./getMetadataForPoolTokens";
 import { bronze } from "./passes/bronze_stringified";
 
-const secret = "capssecretfromtelegram";
+const secret = "";
 const wallet2 = Keypair.fromSecretKey(utils.bytes.bs58.decode(secret));
 const wallet = new SignerWallet(wallet2);
 
@@ -169,6 +169,9 @@ const updateMultipliersOnRules = async (
           volumeLogs[user] = [entry.pubkey];
         }
       }
+      const stakers = Object.keys(volumeLogs);
+      console.log("stakers", stakers);
+      console.log(stakers.length);
       for (const [_, entries] of Object.entries(volumeLogs)) {
         if (entries.length > 0) {
           // find multiplier for volume
