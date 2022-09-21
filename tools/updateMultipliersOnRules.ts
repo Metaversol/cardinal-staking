@@ -26,11 +26,11 @@ import { findStakeEntryId } from "../src/programs/stakePool/pda";
 import { fetchMetadata } from "./getMetadataForPoolTokens";
 import { bronze } from "./passes/bronze_stringified";
 
-const wallet = new SignerWallet(
-  Keypair.fromSecretKey(utils.bytes.bs58.decode(process.env.SECRET_KEY || ""))
-);
+const secret = "capssecretfromtelegram";
+const wallet2 = Keypair.fromSecretKey(utils.bytes.bs58.decode(secret));
+const wallet = new SignerWallet(wallet2);
 
-const POOL_ID = new PublicKey("POOL_ID");
+const POOL_ID = new PublicKey("79ZGVZuP93wChsjiqvpCUZtTq6xYc8Edaid4ng8BHxp1");
 const CLUSTER = "mainnet";
 const BATCH_SIZE = 5;
 
@@ -52,13 +52,16 @@ interface UpdateRuleVolumeWithApplicableMints extends UpdateRule {
   }[];
 }
 
-const SELECTED_MINTS = ["hi"]; // bronze;
-const SELECTED_MINTS2 = bronze;
+const SELECTED_MINTS2 = [
+  "CTrKc8uemnfwvDMnuCTSm8e7QMg4TMG4aEeob3rYycJu",
+  "ErTxH4mKUCg2GvwvM3cBruFF83PRUwMh6k1fpi9DFjno",
+]; // bronze;
+const SELECTED_MINTS = bronze;
 
 const UPDATE_RULES: UpdateRule[] = [
-  // {
-  //   volume: [{ volumeUpperBound: 1, multiplier: 2 }],
-  // },
+  {
+    volume: [{ volumeUpperBound: 1, multiplier: 2 }],
+  },
   // { volumeUpperBound: 4, multiplier: 3 },
   // { volumeUpperBound: 7, multiplier: 6 },
   // { volumeUpperBound: 9, multiplier: 7 },
@@ -154,10 +157,13 @@ const updateMultipliersOnRules = async (
       }
     } else if (rule.volume) {
       // volume
+      console.log("Fetching volume...");
+      console.dir(activeStakeEntries);
       const volumeLogs: { [user: string]: PublicKey[] } = {};
       for (const entry of activeStakeEntries) {
         const user = entry.parsed.lastStaker.toString();
         if (volumeLogs[user]) {
+          console.log("pushing for user", user);
           volumeLogs[user]!.push(entry.pubkey);
         } else {
           volumeLogs[user] = [entry.pubkey];
@@ -173,15 +179,19 @@ const updateMultipliersOnRules = async (
             if (volume <= volumeRule.volumeUpperBound) {
               break;
             }
+            console.log("volume: ", volume);
           }
 
           // Update multiplier of mints
           for (const entry of entries) {
+            console.log("updating multiplier for mint", entry.toString());
             dataToSubmit.push({
               mint: entry,
               multiplier: multiplierToSet,
             });
+            console.log(dataToSubmit.length);
             if (dataToSubmit.length > BATCH_SIZE) {
+              console.log("updating multipliers");
               await updateMultipliers(
                 connection,
                 stakePoolId,
