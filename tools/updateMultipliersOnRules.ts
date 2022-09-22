@@ -4,6 +4,7 @@ import { SignerWallet } from "@saberhq/solana-contrib";
 import type { Connection } from "@solana/web3.js";
 import { Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { BN } from "bn.js";
+import * as fs from "fs";
 
 import { executeTransaction } from "../src";
 import {
@@ -26,7 +27,32 @@ import { findStakeEntryId } from "../src/programs/stakePool/pda";
 import { fetchMetadata } from "./getMetadataForPoolTokens";
 import { bronze } from "./passes/bronze_stringified";
 
-const secret = "";
+export const saveJsonAsTsFileStringy = (
+  filename: string,
+  jsonToSave: object
+) => {
+  console.log("Saving file: " + __dirname + filename);
+  const contentString = `export const ${filename}= ${JSON.stringify(
+    jsonToSave,
+    null,
+    4
+  )}`;
+  const options = { flag: "wx" };
+  fs.writeFile(
+    `${__dirname}/${filename}_stringified.ts`,
+    contentString,
+    options,
+    function (err) {
+      if (err) {
+        return console.error(err);
+      }
+    }
+  );
+  console.log("File created!");
+  console.log(`${__dirname}/${filename}_stringified.ts`);
+};
+
+const secret = process.env.SECRET_KEY || "";
 const wallet2 = Keypair.fromSecretKey(utils.bytes.bs58.decode(secret));
 const wallet = new SignerWallet(wallet2);
 
@@ -96,9 +122,23 @@ const updateMultipliersOnRules = async (
   const activeStakeEntries = activeStakeEntriesAll.filter((entry) =>
     SELECTED_MINTS.includes(entry.parsed.originalMint.toBase58())
   );
-  console.dir(activeStakeEntries);
-  console.log("active activeStakeEntries: ", activeStakeEntries.length);
-
+  // console.dir(activeStakeEntries);
+  // console.log("active activeStakeEntries: ", activeStakeEntries.length);
+  const volumeLogs: { [user: string]: PublicKey[] } = {};
+  for (const entry of activeStakeEntriesAll) {
+    const user = entry.parsed.lastStaker.toString();
+    if (volumeLogs[user]) {
+      console.log("pushing for user", user);
+      volumeLogs[user]!.push(entry.pubkey);
+    } else {
+      volumeLogs[user] = [entry.pubkey];
+    }
+  }
+  // saveJsonAsTsFileStringy("volumeLogs", volumeLogs);
+  // return;
+  const stakers = Object.keys(volumeLogs);
+  console.log("stakers", stakers);
+  console.log(stakers.length);
   for (const rule of UPDATE_RULES) {
     let dataToSubmit: { mint: PublicKey; multiplier: number }[] = [];
 
