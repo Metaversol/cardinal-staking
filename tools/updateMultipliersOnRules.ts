@@ -32,7 +32,7 @@ const wallet = new SignerWallet(wallet2);
 
 const POOL_ID = new PublicKey("79ZGVZuP93wChsjiqvpCUZtTq6xYc8Edaid4ng8BHxp1");
 const CLUSTER = "mainnet";
-const BATCH_SIZE = 5;
+const BATCH_SIZE = 8;
 
 export type UpdateRule = {
   volume?: { volumeUpperBound: number; multiplier: number }[];
@@ -56,7 +56,10 @@ const SELECTED_MINTS2 = [
   "CTrKc8uemnfwvDMnuCTSm8e7QMg4TMG4aEeob3rYycJu",
   "ErTxH4mKUCg2GvwvM3cBruFF83PRUwMh6k1fpi9DFjno",
 ]; // bronze;
-const SELECTED_MINTS = bronze;
+// const SELECTED_MINTS = bronze.slice(1999, 2500); // 3363
+// const SELECTED_MINTS = bronze.slice(2499, 3000); // 3363
+const SELECTED_MINTS = bronze; // 3363
+// const SELECTED_MINTS = bronze.slice(2999); // 3363
 
 const UPDATE_RULES: UpdateRule[] = [
   {
@@ -342,6 +345,7 @@ const updateMultipliers = async (
 
   // Execute transaction
   if (transaction.instructions.length > 0) {
+    console.log("executing transaction");
     const txId = await executeTransaction(connection, wallet, transaction, {});
     console.log(`Successfully executed transaction ${txId}\n`);
   } else {
