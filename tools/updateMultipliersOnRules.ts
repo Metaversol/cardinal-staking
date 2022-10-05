@@ -52,11 +52,12 @@ export const saveJsonAsTsFileStringy = (
   console.log(`${__dirname}/${filename}_stringified.ts`);
 };
 
-const secret = process.env.SECRET_KEY || "";
+const secret = process.env.SECRET_KEY as string;
 const wallet2 = Keypair.fromSecretKey(utils.bytes.bs58.decode(secret));
 const wallet = new SignerWallet(wallet2);
-
-const POOL_ID = new PublicKey("79ZGVZuP93wChsjiqvpCUZtTq6xYc8Edaid4ng8BHxp1");
+const cuPool = "4Nmq5mM747qbA53Yik6KFw4G4nvoSRPsJqRSSGJUwWVa"; //swrm wallet
+const capsPool = "79ZGVZuP93wChsjiqvpCUZtTq6xYc8Edaid4ng8BHxp1";
+const POOL_ID = new PublicKey(cuPool);
 const CLUSTER = "mainnet";
 const BATCH_SIZE = 8;
 
@@ -78,10 +79,6 @@ interface UpdateRuleVolumeWithApplicableMints extends UpdateRule {
   }[];
 }
 
-const SELECTED_MINTS2 = [
-  "CTrKc8uemnfwvDMnuCTSm8e7QMg4TMG4aEeob3rYycJu",
-  "ErTxH4mKUCg2GvwvM3cBruFF83PRUwMh6k1fpi9DFjno",
-]; // bronze;
 // const SELECTED_MINTS = bronze.slice(1999, 2500); // 3363
 // const SELECTED_MINTS = bronze.slice(2499, 3000); // 3363
 const SELECTED_MINTS = bronze; // 3363
@@ -107,7 +104,8 @@ const UPDATE_RULES: UpdateRule[] = [
 
 const updateMultipliersOnRules = async (
   stakePoolId: PublicKey,
-  cluster: string
+  cluster: string,
+  snapshot: boolean
 ) => {
   const connection = connectionFor(cluster);
 
@@ -134,8 +132,10 @@ const updateMultipliersOnRules = async (
       volumeLogs[user] = [entry.pubkey];
     }
   }
-  // saveJsonAsTsFileStringy("volumeLogs", volumeLogs);
-  // return;
+  if (snapshot) {
+    saveJsonAsTsFileStringy("volumeLogs", volumeLogs);
+    return;
+  }
   const stakers = Object.keys(volumeLogs);
   console.log("stakers", stakers);
   console.log(stakers.length);
@@ -393,4 +393,4 @@ const updateMultipliers = async (
   }
 };
 
-updateMultipliersOnRules(POOL_ID, CLUSTER).catch((e) => console.log(e));
+updateMultipliersOnRules(POOL_ID, CLUSTER, true).catch((e) => console.log(e));
