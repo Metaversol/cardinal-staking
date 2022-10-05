@@ -52,7 +52,7 @@ export const saveJsonAsTsFileStringy = (
   console.log(`${__dirname}/${filename}_stringified.ts`);
 };
 
-const secret = process.env.SECRET_KEY as string;
+const secret = (process.env.CU_SECRET as string) || "";
 const wallet2 = Keypair.fromSecretKey(utils.bytes.bs58.decode(secret));
 const wallet = new SignerWallet(wallet2);
 const cuPool = "4Nmq5mM747qbA53Yik6KFw4G4nvoSRPsJqRSSGJUwWVa"; //swrm wallet
@@ -134,8 +134,10 @@ const updateMultipliersOnRules = async (
   }
   if (snapshot) {
     saveJsonAsTsFileStringy("volumeLogs", volumeLogs);
+    console.log("saved volume logs");
     return;
   }
+  console.log("actually changing things now");
   const stakers = Object.keys(volumeLogs);
   console.log("stakers", stakers);
   console.log(stakers.length);
