@@ -288,6 +288,9 @@ export const claimRewards = async (
   params: {
     stakePoolId: PublicKey;
     stakeEntryId: PublicKey;
+    lastStaker?: PublicKey;
+    payer?: PublicKey;
+    skipRewardMintTokenAccount?: boolean;
   }
 ): Promise<Transaction> => {
   const transaction = new Transaction();
@@ -300,6 +303,9 @@ export const claimRewards = async (
   await withClaimRewards(transaction, connection, wallet, {
     stakePoolId: params.stakePoolId,
     stakeEntryId: params.stakeEntryId,
+    lastStaker: params.lastStaker ?? wallet.publicKey,
+    payer: params.payer,
+    skipRewardMintTokenAccount: params.skipRewardMintTokenAccount,
   });
 
   return transaction;
@@ -361,7 +367,7 @@ export const stake = async (
     amount: params.amount,
   });
 
-  if (params.receiptType) {
+  if (params.receiptType && params.receiptType !== ReceiptType.None) {
     const receiptMintId =
       params.receiptType === ReceiptType.Receipt
         ? stakeEntryData?.parsed.stakeMint
@@ -409,6 +415,7 @@ export const unstake = async (
   params: {
     stakePoolId: PublicKey;
     originalMintId: PublicKey;
+    skipRewardMintTokenAccount?: boolean;
   }
 ): Promise<Transaction> =>
   withUnstake(new Transaction(), connection, wallet, params);

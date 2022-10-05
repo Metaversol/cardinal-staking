@@ -8,10 +8,8 @@ install:
 	yarn install
 
 test-keys:
-	anchor build
 	LC_ALL=C find programs src -type f -exec sed -i '' -e "s/stkBL96RZkjY5ine4TvPihGqW8UHJfch2cokjAPzV8i/$$(solana-keygen pubkey ./target/deploy/cardinal_stake_pool-keypair.json)/g" {} +
 	LC_ALL=C find programs src -type f -exec sed -i '' -e "s/rwdNPNPS6zNvtF6FMvaxPRjzu2eC51mXaDT9rmWsojp/$$(solana-keygen pubkey ./target/deploy/cardinal_reward_distributor-keypair.json)/g" {} +
-	anchor build
 
 build:
 	anchor build

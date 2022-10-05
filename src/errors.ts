@@ -14,14 +14,46 @@ type ErrorCode = {
 
 export const NATIVE_ERRORS: ErrorCode[] = [
   {
+    code: "WalletSignTransactionError",
+    message: "User rejected the request.",
+  },
+  {
+    code: "failed to get recent blockhash",
+    message:
+      "Solana is experiencing degrading performance. You transaction failed to execute.",
+  },
+  {
     code: "Blockhash not found",
     message:
-      "Blockhash not found. Transaction may or may not have gone through",
+      "Solana is experiencing degrading performance. Transaction may or may not have gone through.",
   },
   {
     code: "Transaction was not confirmed in",
     message:
-      "Transaction timed out waiting on confirmation from Solana. It may or may not have gone through",
+      "Transaction timed out waiting on confirmation from Solana. It may or may not have gone through.",
+  },
+  {
+    code: "Attempt to debit an account but found no record of a prior credit",
+    message: "Wallet has never had any sol before. Try adding sol first.",
+  },
+  {
+    code: "Provided owner is not allowed",
+    message: "Token account is already created for this user",
+  },
+  {
+    code: "not associated with",
+    message: "Account not associated with this mint",
+  },
+  {
+    code: "rent-exempt",
+    message:
+      "Insufficient funds. User does not have enough sol to complete the transaction",
+  },
+  // token program errors
+  {
+    code: "insufficient funds",
+    message:
+      "Insufficient funds. User does not have enough balance of token to complete the transaction",
   },
   // token program errors
   {

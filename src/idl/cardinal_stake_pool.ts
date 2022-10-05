@@ -1,5 +1,5 @@
 export type CardinalStakePool = {
-  version: "1.7.0";
+  version: "1.10.2";
   name: "cardinal_stake_pool";
   instructions: [
     {
@@ -217,6 +217,27 @@ export type CardinalStakePool = {
       ];
     },
     {
+      name: "deauthorizeMint";
+      accounts: [
+        {
+          name: "stakePool";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "stakeAuthorizationRecord";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "authority";
+          isMut: true;
+          isSigner: true;
+        }
+      ];
+      args: [];
+    },
+    {
       name: "stake";
       accounts: [
         {
@@ -413,7 +434,7 @@ export type CardinalStakePool = {
         {
           name: "lastStaker";
           isMut: true;
-          isSigner: false;
+          isSigner: true;
         }
       ];
       args: [];
@@ -521,6 +542,34 @@ export type CardinalStakePool = {
         }
       ];
       args: [];
+    },
+    {
+      name: "reasssignStakeEntry";
+      accounts: [
+        {
+          name: "stakePool";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "stakeEntry";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "lastStaker";
+          isMut: true;
+          isSigner: true;
+        }
+      ];
+      args: [
+        {
+          name: "ix";
+          type: {
+            defined: "ReassignStakeEntryIx";
+          };
+        }
+      ];
     }
   ];
   accounts: [
@@ -767,6 +816,18 @@ export type CardinalStakePool = {
       };
     },
     {
+      name: "ReassignStakeEntryIx";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "target";
+            type: "publicKey";
+          }
+        ];
+      };
+    },
+    {
       name: "UpdatePoolIx";
       type: {
         kind: "struct";
@@ -822,6 +883,20 @@ export type CardinalStakePool = {
             type: {
               option: "i64";
             };
+          }
+        ];
+      };
+    },
+    {
+      name: "StakeEntryKind";
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "Permissionless";
+          },
+          {
+            name: "Permissioned";
           }
         ];
       };
@@ -952,12 +1027,22 @@ export type CardinalStakePool = {
       code: 6024;
       name: "StakePoolHasEnded";
       msg: "Stake pool has ended";
+    },
+    {
+      code: 6025;
+      name: "InvalidMintMetadataOwner";
+      msg: "Mint metadata is owned by the incorrect program";
+    },
+    {
+      code: 6026;
+      name: "StakeMintAlreadyInitialized";
+      msg: "Stake mint already intialized";
     }
   ];
 };
 
 export const IDL: CardinalStakePool = {
-  version: "1.7.0",
+  version: "1.10.2",
   name: "cardinal_stake_pool",
   instructions: [
     {
@@ -1175,6 +1260,27 @@ export const IDL: CardinalStakePool = {
       ],
     },
     {
+      name: "deauthorizeMint",
+      accounts: [
+        {
+          name: "stakePool",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "stakeAuthorizationRecord",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "authority",
+          isMut: true,
+          isSigner: true,
+        },
+      ],
+      args: [],
+    },
+    {
       name: "stake",
       accounts: [
         {
@@ -1371,7 +1477,7 @@ export const IDL: CardinalStakePool = {
         {
           name: "lastStaker",
           isMut: true,
-          isSigner: false,
+          isSigner: true,
         },
       ],
       args: [],
@@ -1479,6 +1585,34 @@ export const IDL: CardinalStakePool = {
         },
       ],
       args: [],
+    },
+    {
+      name: "reasssignStakeEntry",
+      accounts: [
+        {
+          name: "stakePool",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "stakeEntry",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "lastStaker",
+          isMut: true,
+          isSigner: true,
+        },
+      ],
+      args: [
+        {
+          name: "ix",
+          type: {
+            defined: "ReassignStakeEntryIx",
+          },
+        },
+      ],
     },
   ],
   accounts: [
@@ -1725,6 +1859,18 @@ export const IDL: CardinalStakePool = {
       },
     },
     {
+      name: "ReassignStakeEntryIx",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "target",
+            type: "publicKey",
+          },
+        ],
+      },
+    },
+    {
       name: "UpdatePoolIx",
       type: {
         kind: "struct",
@@ -1780,6 +1926,20 @@ export const IDL: CardinalStakePool = {
             type: {
               option: "i64",
             },
+          },
+        ],
+      },
+    },
+    {
+      name: "StakeEntryKind",
+      type: {
+        kind: "enum",
+        variants: [
+          {
+            name: "Permissionless",
+          },
+          {
+            name: "Permissioned",
           },
         ],
       },
@@ -1910,6 +2070,16 @@ export const IDL: CardinalStakePool = {
       code: 6024,
       name: "StakePoolHasEnded",
       msg: "Stake pool has ended",
+    },
+    {
+      code: 6025,
+      name: "InvalidMintMetadataOwner",
+      msg: "Mint metadata is owned by the incorrect program",
+    },
+    {
+      code: 6026,
+      name: "StakeMintAlreadyInitialized",
+      msg: "Stake mint already intialized",
     },
   ],
 };

@@ -1,4 +1,3 @@
-import { connectionFor } from "@cardinal/common";
 import { utils } from "@project-serum/anchor";
 import { SignerWallet } from "@saberhq/solana-contrib";
 import { Keypair, Transaction } from "@solana/web3.js";
@@ -11,6 +10,7 @@ import {
 } from "../src/programs/rewardDistributor/accounts";
 import { findRewardEntryId } from "../src/programs/rewardDistributor/pda";
 import { getAllStakeEntries } from "../src/programs/stakePool/accounts";
+import { connectionFor } from "./connection";
 // import { findStakeEntryIdFromMint } from "../src/programs/stakePool/utils";
 
 const wallet = Keypair.fromSecretKey(

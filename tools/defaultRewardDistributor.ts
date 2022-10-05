@@ -1,4 +1,4 @@
-import { connectionFor, tryGetAccount } from "@cardinal/common";
+import { tryGetAccount } from "@cardinal/common";
 import { utils } from "@project-serum/anchor";
 import { SignerWallet } from "@saberhq/solana-contrib";
 import { Keypair, Transaction } from "@solana/web3.js";
@@ -8,6 +8,7 @@ import { findRewardDistributorId } from "../src/programs/rewardDistributor/pda";
 // import { withDefaultRewardDistributor } from "../src/programs/rewardDistributor/transaction";
 import { getAllStakePools } from "../src/programs/stakePool/accounts";
 import { executeTransaction } from "../src/utils";
+import { connectionFor } from "./connection";
 
 const wallet = Keypair.fromSecretKey(utils.bytes.bs58.decode("SECRET_KEY"));
 

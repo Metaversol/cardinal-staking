@@ -1,3 +1,5 @@
+use mpl_token_metadata::utils::assert_derivation;
+
 use {
     crate::{errors::ErrorCode, state::*},
     anchor_lang::prelude::*,
@@ -37,13 +39,26 @@ pub fn handler(ctx: Context<InitEntryCtx>, _user: Pubkey) -> Result<()> {
     stake_entry.original_mint = ctx.accounts.original_mint.key();
     stake_entry.amount = 0;
 
+    // assert metadata account derivation
+    assert_derivation(
+        &mpl_token_metadata::id(),
+        &&ctx.accounts.original_mint_metadata.to_account_info(),
+        &[
+            mpl_token_metadata::state::PREFIX.as_bytes(),
+            mpl_token_metadata::id().as_ref(),
+            ctx.accounts.original_mint.key().as_ref(),
+        ],
+    )?;
     // check allowlist
     if !stake_pool.requires_creators.is_empty() || !stake_pool.requires_collections.is_empty() || stake_pool.requires_authorization {
         let mut allowed = false;
 
         if !ctx.accounts.original_mint_metadata.data_is_empty() {
             let mint_metadata_data = ctx.accounts.original_mint_metadata.try_borrow_mut_data().expect("Failed to borrow data");
-            let original_mint_metadata = Metadata::deserialize(&mut mint_metadata_data.as_ref())?;
+            if ctx.accounts.original_mint_metadata.to_account_info().owner.key() != mpl_token_metadata::id() {
+                return Err(error!(ErrorCode::InvalidMintMetadataOwner));
+            }
+            let original_mint_metadata = Metadata::deserialize(&mut mint_metadata_data.as_ref()).expect("Failed to deserialize metadata");
             if original_mint_metadata.mint != ctx.accounts.original_mint.key() {
                 return Err(error!(ErrorCode::InvalidMintMetadata));
             }

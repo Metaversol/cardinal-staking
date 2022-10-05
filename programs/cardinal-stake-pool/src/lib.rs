@@ -30,6 +30,10 @@ pub mod cardinal_stake_pool {
         authorize_mint::handler(ctx, mint)
     }
 
+    pub fn deauthorize_mint(ctx: Context<DeauthorizeMintCtx>) -> Result<()> {
+        deauthorize_mint::handler(ctx)
+    }
+
     pub fn stake(ctx: Context<StakeCtx>, amount: u64) -> Result<()> {
         stake::handler(ctx, amount)
     }
@@ -64,5 +68,9 @@ pub mod cardinal_stake_pool {
 
     pub fn stake_pool_fill_zeros(ctx: Context<StakePoolFillZeros>) -> Result<()> {
         stake_pool_fill_zeros::handler(ctx)
+    }
+
+    pub fn reasssign_stake_entry(ctx: Context<ReassignStakeEntryCtx>, ix: ReassignStakeEntryIx) -> Result<()> {
+        reassign_stake_entry::handler(ctx, ix)
     }
 }

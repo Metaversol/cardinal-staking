@@ -200,6 +200,10 @@ Multipliers is a feature that can set a given token (via its reward_entry) to re
 - Modeling this separately allows for either 1) the user to initialize their own reward_entries and the authority to update their multiplier later on or 2) the authority to run arbitrary events / bonuses for specific NFTs at any time.
 - In addition, the authority may initialize all the entries up front and set the correct / desired multipliers for their NFTs such that it will correctly allocate when the user first stakes.
 
+## Stake Pool Fees
+
+https://www.notion.so/cardinal-labs/Cardinal-Staking-Fees-14e66a64fb2d4615892937c5dbaa91cc
+
 ## Questions & Support
 
 If you are developing using Cardinal staking contracts and libraries, feel free to reach out for support on Discord. We will work with you or your team to answer questions, provide development support and discuss new feature requests.

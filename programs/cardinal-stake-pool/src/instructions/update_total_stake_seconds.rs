@@ -1,16 +1,12 @@
-use {
-    crate::{errors::ErrorCode, state::*},
-    anchor_lang::prelude::*,
-};
+use {crate::state::*, anchor_lang::prelude::*};
 
 #[derive(Accounts)]
 pub struct UpdateTotalStakeSecondsCtx<'info> {
     #[account(mut)]
     stake_entry: Account<'info, StakeEntry>,
 
-    /// CHECK: This is not dangerous because we don't read or write from this account
-    #[account(mut, constraint = last_staker.key() == stake_entry.last_staker @ErrorCode::InvalidLastStaker)]
-    last_staker: UncheckedAccount<'info>,
+    #[account(mut)]
+    last_staker: Signer<'info>,
 }
 
 pub fn handler(ctx: Context<UpdateTotalStakeSecondsCtx>) -> Result<()> {
@@ -25,6 +21,10 @@ pub fn handler(ctx: Context<UpdateTotalStakeSecondsCtx>) -> Result<()> {
             .unwrap(),
         );
         stake_entry.last_staked_at = Clock::get().unwrap().unix_timestamp;
+    }
+
+    if ctx.accounts.last_staker.key() != stake_entry.last_staker {
+        stake_entry.kind = StakeEntryKind::Permissioned as u8
     }
     Ok(())
 }

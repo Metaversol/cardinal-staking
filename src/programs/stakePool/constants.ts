@@ -36,4 +36,6 @@ export enum ReceiptType {
   Original = 1,
   // Receive a receipt mint wrapped in a token manager
   Receipt = 2,
+  // Receive nothing
+  None = 3,
 }

@@ -5,24 +5,32 @@ import {
   Program,
   utils,
 } from "@project-serum/anchor";
+import { SignerWallet } from "@saberhq/solana-contrib";
 import type { Connection, PublicKey } from "@solana/web3.js";
+import { Keypair } from "@solana/web3.js";
 
 import type { REWARD_DISTRIBUTOR_PROGRAM } from ".";
 import { REWARD_DISTRIBUTOR_ADDRESS, REWARD_DISTRIBUTOR_IDL } from ".";
 import type { RewardDistributorData, RewardEntryData } from "./constants";
 
-export const getRewardEntry = async (
-  connection: Connection,
-  rewardEntryId: PublicKey
-): Promise<AccountData<RewardEntryData>> => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const provider = new AnchorProvider(connection, null, {});
-  const rewardDistributorProgram = new Program<REWARD_DISTRIBUTOR_PROGRAM>(
+const getProgram = (connection: Connection) => {
+  const provider = new AnchorProvider(
+    connection,
+    new SignerWallet(Keypair.generate()),
+    {}
+  );
+  return new Program<REWARD_DISTRIBUTOR_PROGRAM>(
     REWARD_DISTRIBUTOR_IDL,
     REWARD_DISTRIBUTOR_ADDRESS,
     provider
   );
+};
+
+export const getRewardEntry = async (
+  connection: Connection,
+  rewardEntryId: PublicKey
+): Promise<AccountData<RewardEntryData>> => {
+  const rewardDistributorProgram = getProgram(connection);
 
   const parsed = (await rewardDistributorProgram.account.rewardEntry.fetch(
     rewardEntryId
@@ -37,14 +45,7 @@ export const getRewardEntries = async (
   connection: Connection,
   rewardEntryIds: PublicKey[]
 ): Promise<AccountData<RewardEntryData>[]> => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const provider = new AnchorProvider(connection, null, {});
-  const rewardDistributorProgram = new Program<REWARD_DISTRIBUTOR_PROGRAM>(
-    REWARD_DISTRIBUTOR_IDL,
-    REWARD_DISTRIBUTOR_ADDRESS,
-    provider
-  );
+  const rewardDistributorProgram = getProgram(connection);
 
   const stakeEntries =
     (await rewardDistributorProgram.account.rewardEntry.fetchMultiple(
@@ -60,14 +61,7 @@ export const getRewardDistributor = async (
   connection: Connection,
   rewardDistributorId: PublicKey
 ): Promise<AccountData<RewardDistributorData>> => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const provider = new AnchorProvider(connection, null, {});
-  const rewardDistributorProgram = new Program<REWARD_DISTRIBUTOR_PROGRAM>(
-    REWARD_DISTRIBUTOR_IDL,
-    REWARD_DISTRIBUTOR_ADDRESS,
-    provider
-  );
+  const rewardDistributorProgram = getProgram(connection);
 
   const parsed =
     (await rewardDistributorProgram.account.rewardDistributor.fetch(
@@ -83,14 +77,7 @@ export const getRewardDistributors = async (
   connection: Connection,
   rewardDistributorIds: PublicKey[]
 ): Promise<AccountData<RewardDistributorData>[]> => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const provider = new AnchorProvider(connection, null, {});
-  const rewardDistributorProgram = new Program<REWARD_DISTRIBUTOR_PROGRAM>(
-    REWARD_DISTRIBUTOR_IDL,
-    REWARD_DISTRIBUTOR_ADDRESS,
-    provider
-  );
+  const rewardDistributorProgram = getProgram(connection);
 
   const stakeEntries =
     (await rewardDistributorProgram.account.rewardDistributor.fetchMultiple(
